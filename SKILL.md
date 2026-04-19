@@ -45,16 +45,23 @@ head -50 CLAUDE.md 2>/dev/null || echo "no CLAUDE.md found"
 
 ## Path Constants
 
-- **VAULT_ROOT:** `C:\Users\user\cloud-sync\Documents\Obsidian Notes\Obsidian Vault`
-- **NOTES_DIR:** `C:\Users\user\cloud-sync\Documents\Obsidian Notes\Obsidian Vault\ClaudeCode Notes`
+Configure these before using the skill. The skill resolves paths in this order:
+
+1. **Environment variables** (recommended):
+   - `CLAUDE_SUMMARY_VAULT_ROOT` — absolute path to your Obsidian vault root
+   - `CLAUDE_SUMMARY_NOTES_DIR` — absolute path where ClaudeCode session notes live (defaults to `${VAULT_ROOT}/ClaudeCode Notes`)
+
+2. **Config file** (fallback): `~/.config/claude-summary/config.json` with `{ "vaultRoot": "...", "notesDir": "..." }`
+
+3. **Home-dir auto-detect** (last resort): `~/Documents/Obsidian Vault/ClaudeCode Notes`
 
 All notes — session logs AND concept notes — are written to NOTES_DIR.
 
-**Path safety (Windows + Bash):**
-- Forward slashes in all Bash commands
-- Double-quote ALL paths (spaces + apostrophe in `User's`)
-- Write atomically — full content in a single Write call (cloud-sync syncs in background)
-- `[[` `]]` and `—` (em dash) in filenames are valid on Windows NTFS and work in Obsidian
+**Path safety (platform-agnostic, Bash-compatible):**
+- Forward slashes in all Bash commands (works on Windows Git Bash and Unix)
+- Double-quote paths that may contain spaces or apostrophes
+- Write atomically — full content in a single Write call (cloud-synced folders like OneDrive / Dropbox / iCloud handle syncing in background)
+- `[[` `]]` and `—` (em dash) in filenames are valid on Windows NTFS and Linux/macOS ext4/APFS, and work in Obsidian
 
 ---
 
@@ -71,7 +78,7 @@ Execute immediately. No confirmation prompts. No "would you like me to?" Just wr
 
 ### Step 1: Setup & Project Detection
 
-1. Verify NOTES_DIR exists. If not: `mkdir -p "C:/Users/user/cloud-sync/Documents/Obsidian Notes/Obsidian Vault/ClaudeCode Notes"`
+1. Verify NOTES_DIR exists. If not: `mkdir -p "${NOTES_DIR}"`
 2. Determine the project:
    - Read the DCI-injected CLAUDE.md content (already in context above)
    - Read `${CLAUDE_SKILL_DIR}/references/projects.md` for the known project table

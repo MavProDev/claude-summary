@@ -8,7 +8,7 @@ Rules:
 - Em dash separator ` — ` (space + em dash + space), NEVER hyphen ` - `
 - Topic Summary: 3-8 words, concise, specific, data-driven when possible
 - Multiple sessions same day: append `Session 2`, `Session 3`
-- Full path: `C:\Users\user\cloud-sync\Documents\Obsidian Notes\Obsidian Vault\ClaudeCode Notes\[[ProjectName — Topic — YYYY-MM-DD]].md`
+- Full path: `${NOTES_DIR}/[[ProjectName — Topic — YYYY-MM-DD]].md`
 
 **Good filename examples:**
 ```

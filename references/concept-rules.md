@@ -49,7 +49,7 @@ Create a standalone concept note for every genuinely new item from these categor
 Duplicate concept notes fragment the graph and split edges. Always search before creating.
 
 **Search scope:** The ENTIRE vault, not just ClaudeCode Notes/.
-**Vault root:** `C:\Users\user\cloud-sync\Documents\Obsidian Notes\Obsidian Vault\`
+**Vault root:** `${VAULT_ROOT}` (set via env var — see SKILL.md "Path Constants")
 
 For each concept note candidate:
 
