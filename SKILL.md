@@ -62,6 +62,8 @@ All notes — session logs AND concept notes — are written to NOTES_DIR.
 - Double-quote paths that may contain spaces or apostrophes
 - Write atomically — full content in a single Write call (cloud-synced folders like OneDrive / Dropbox / iCloud handle syncing in background)
 - `[[` `]]` and `—` (em dash) in filenames are valid on Windows NTFS and Linux/macOS ext4/APFS, and work in Obsidian
+- **Cloud-sync race awareness:** if the vault lives on OneDrive / Dropbox / iCloud, files can be modified between your Read and Edit calls by the sync agent, by Obsidian itself, or by your own prior Edits to the same file earlier in the session. If you get `File has been modified since read`, re-Read and retry. This is normal; don't panic.
+- **Write requires prior Read for existing files.** If a file already exists, you MUST Read it before any Edit or Write — Write will error on an unread existing file. Always Glob FIRST to discover whether a file exists, then Read-then-Edit for appends (never Write-over-existing).
 
 ---
 
@@ -129,9 +131,11 @@ Extract:
    - `Glob "${VAULT_ROOT}/**/*ConceptName*.md"` (search entire vault, not just ClaudeCode Notes/)
    - Check variations: singular/plural, hyphenated/spaced, abbreviated/full
 4. Decision for each:
-   - **Exists** → link to it in the session log's Related section. If the session significantly expanded understanding, use Edit to append a `## Session Update — YYYY-MM-DD` section to the existing note.
+   - **Exists** → link to it in the session log's Related section. If the session significantly expanded understanding, Read the file first, then Edit to append a `## Session Update — YYYY-MM-DD` section. Do not use Write — it will error on the unread existing file and would clobber existing content even if it didn't.
    - **Doesn't exist** → mark for creation in Step 6.
-5. Record results: which already existed, which are genuinely new.
+5. **Same-day multi-scope guard.** If the existing note already has a `## Session Update — <today>` section (e.g., from an earlier session on a different project the same day), add a scope suffix to disambiguate: `## Session Update — 2026-04-18 (ClaudeSuite integration)` vs `## Session Update — 2026-04-18 (SolScore ship)`. Do NOT merge sections — they're distinct sessions with distinct contexts and future-you needs to tell them apart.
+6. **Runbook-adjacent concepts.** If the session produced an in-repo procedural runbook (e.g., `docs/runbooks/<X>.md`), create a corresponding concept note `[[<X> Runbook]]` that describes the concept + motivation + links to the runbook file location — but does NOT duplicate the runbook's step-by-step content. The concept note serves graph growth; the runbook serves the repo. They are complementary, not redundant.
+7. Record results: which already existed, which are genuinely new.
 
 ### Step 5: Write Session Log
 
@@ -276,4 +280,5 @@ Handle all of these without breaking or asking for guidance:
 11. **NEVER omit the Related section** — Every note links outward. Orphan nodes are useless.
 12. **NEVER omit tags** — `#claudecode #session-log` always. Plus project and topic tags.
 13. **NEVER write opinion as fact** — If uncertain, say so. Never fabricate specs or stats.
-14. **NEVER overwrite existing concept notes** — Link to them, or Edit to append. Never Write over them.
+14. **NEVER overwrite existing concept notes** — Link to them, or Read-then-Edit to append. Never Write over them. The Write tool will error on an unread existing file; that error is a feature, not a bug — it forces you to see existing content before attempting change. When you hit it, Glob → Read → Edit instead.
+15. **NEVER prescribe actions that conflict with the project's `CLAUDE.md` never-touch rules** — before writing Next Steps, check CLAUDE.md. Example: if CLAUDE.md says session prompts are gitignored, don't suggest `git add docs/sessionN-next-prompt.md` in Next Steps. Project-specific conventions override the skill's defaults.
